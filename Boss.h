@@ -12,7 +12,8 @@ public:
 	enum State {
 		kPatrol,  // 通常パトロール
 		kCharge,  // 突進攻撃
-		kCooldown // 突進後のクールダウン
+		kCooldown, // 突進後のクールダウン
+		kJump     // ジャンプ攻撃
 	};
 
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
@@ -45,6 +46,8 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 	// 突進中かどうか
 	bool IsCharging() const { return state_ == State::kCharge; }
+	// ジャンプ中かどうか
+	bool IsJumping() const { return state_ == State::kJump; }
 
 private:
 	WorldTransform worldTransform_;
@@ -87,12 +90,24 @@ private:
 	float stateTimer_ = 0.0f;                           // 状態遷移用タイマー
 	// 突進攻撃を開始
 	void StartCharge();
+	// ジャンプ攻撃関連
+	static inline const float kJumpSpeed = 0.4f;        // ジャンプ時の初速度（上方向）
+	static inline const float kJumpMoveSpeed = 0.1f;    // ジャンプ中の水平移動速度
+	static inline const float kJumpInterval = 4.5f;     // ジャンプ攻撃間隔（秒）
+	static inline const float kGravity = 0.015f;        // 重力加速度
+	float jumpTimer_ = 0.0f;                            // ジャンプ用タイマー
+	bool isOnGround_ = true;                            // 地面にいるかどうか
+	float groundY_ = 0.0f;                              // 地面のY座標
+	// ジャンプ攻撃を開始
+	void StartJump();
 	// パトロール状態の更新
 	void UpdatePatrol();
 	// 突進状態の更新
 	void UpdateCharge();
 	// クールダウン状態の更新
 	void UpdateCooldown();
+	// ジャンプ状態の更新
+	void UpdateJump();
 
 	// ボスのスケール
 	static inline const float kScale = 2.0f;

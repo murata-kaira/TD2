@@ -29,6 +29,10 @@ void Boss::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	isDead_ = false;
 	isInvincible_ = false;
 	invincibleTimer_ = 0.0f;
+
+	// ジャンプ攻撃用の初期化
+	jumpAttackTimer_ = 0.0f;
+	groundY_ = position.y;
 }
 
 void Boss::Update() {
@@ -58,6 +62,12 @@ void Boss::Update() {
 	case State::kCooldown:
 		UpdateCooldown();
 		break;
+	case State::kJumpAttack:
+		UpdateJumpAttack();
+		break;
+	case State::kJumpFall:
+		UpdateJumpFall();
+		break;
 	}
 
 	WorldTransformUpdate(worldTransform_);
@@ -79,9 +89,16 @@ void Boss::UpdatePatrol() {
 	walkTimer += 1.0f / kFrameRate;
 	worldTransform_.rotation_.x = std::sin(std::numbers::pi_v<float> * 2.0f * walkTimer / kWalkMotionTime);
 
+	// ジャンプ攻撃のタイマー
+	jumpAttackTimer_ += 1.0f / kFrameRate;
+	
 	// 突進攻撃のタイマー
 	chargeTimer_ += 1.0f / kFrameRate;
-	if (chargeTimer_ >= kChargeInterval && player_ != nullptr) {
+	
+	// ジャンプ攻撃を優先的に実行
+	if (jumpAttackTimer_ >= kJumpAttackInterval && player_ != nullptr) {
+		StartJumpAttack();
+	} else if (chargeTimer_ >= kChargeInterval && player_ != nullptr) {
 		StartCharge();
 	}
 }
@@ -225,5 +242,62 @@ void Boss::ReverseDirection() {
 	} else {
 		// 左向き
 		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+	}
+}
+
+void Boss::StartJumpAttack() {
+	state_ = State::kJumpAttack;
+	stateTimer_ = 0.0f;
+	jumpAttackTimer_ = 0.0f;
+	chargeTimer_ = 0.0f;
+	
+	// 上昇速度を設定
+	velocity_.y = kJumpSpeed;
+	// X方向の速度を0に
+	velocity_.x = 0.0f;
+}
+
+void Boss::UpdateJumpAttack() {
+	// 上昇中
+	worldTransform_.translation_.y += velocity_.y;
+	velocity_.y -= kGravity;
+	
+	// 前傾姿勢
+	worldTransform_.rotation_.x = 0.5f;
+	
+	// 頂点に達したら落下攻撃に移行
+	if (velocity_.y <= 0.0f) {
+		state_ = State::kJumpFall;
+		
+		// プレイヤーの方向に向ける
+		if (player_ != nullptr) {
+			Vector3 playerPos = player_->GetWorldPosition();
+			Vector3 bossPos = GetWorldPosition();
+			
+			if (playerPos.x < bossPos.x) {
+				worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+			} else {
+				worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+			}
+		}
+		
+		// 急降下開始
+		velocity_.y = -kJumpAttackSpeed;
+	}
+}
+
+void Boss::UpdateJumpFall() {
+	// 急降下
+	worldTransform_.translation_.y += velocity_.y;
+	
+	// 着地判定
+	if (worldTransform_.translation_.y <= groundY_) {
+		worldTransform_.translation_.y = groundY_;
+		velocity_.y = 0.0f;
+		
+		// クールダウンへ移行
+		state_ = State::kCooldown;
+		stateTimer_ = 0.0f;
+		worldTransform_.rotation_.x = 0.0f;
 	}
 }

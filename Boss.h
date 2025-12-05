@@ -10,9 +10,11 @@ class Boss {
 public:
 	// ボスの状態
 	enum State {
-		kPatrol,  // 通常パトロール
-		kCharge,  // 突進攻撃
-		kCooldown // 突進後のクールダウン
+		kPatrol,      // 通常パトロール
+		kCharge,      // 突進攻撃
+		kCooldown,    // 突進後のクールダウン
+		kJumpAttack,  // ジャンプ攻撃
+		kJumpFall     // ジャンプ攻撃中の落下
 	};
 
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
@@ -87,12 +89,18 @@ private:
 	float stateTimer_ = 0.0f;                           // 状態遷移用タイマー
 	// 突進攻撃を開始
 	void StartCharge();
+	// ジャンプ攻撃を開始
+	void StartJumpAttack();
 	// パトロール状態の更新
 	void UpdatePatrol();
 	// 突進状態の更新
 	void UpdateCharge();
 	// クールダウン状態の更新
 	void UpdateCooldown();
+	// ジャンプ攻撃状態の更新
+	void UpdateJumpAttack();
+	// ジャンプ攻撃落下状態の更新
+	void UpdateJumpFall();
 
 	// ボスのスケール
 	static inline const float kScale = 2.0f;
@@ -110,4 +118,12 @@ private:
 	// 点滅パターン
 	static inline const int kBlinkCycle = 4;
 	static inline const int kBlinkOnFrames = 2;
+
+	// ジャンプ攻撃関連
+	static inline const float kJumpAttackInterval = 5.0f;  // ジャンプ攻撃間隔（秒）
+	static inline const float kJumpSpeed = 0.4f;           // ジャンプ上昇速度
+	static inline const float kJumpAttackSpeed = 0.6f;     // ジャンプ攻撃時の下降速度
+	static inline const float kGravity = 0.02f;            // 重力加速度
+	float jumpAttackTimer_ = 0.0f;                         // ジャンプ攻撃用タイマー
+	float groundY_ = 0.0f;                                 // 地面のY座標
 };

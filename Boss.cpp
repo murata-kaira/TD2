@@ -140,6 +140,16 @@ void Boss::UpdateCooldown() {
 		state_ = State::kPatrol;
 		stateTimer_ = 0.0f;
 		chargeTimer_ = 0.0f;
+		
+		// 保存していた水平速度を復元（ジャンプ攻撃後の場合）
+		if (savedVelocityX_ != 0.0f) {
+			velocity_.x = savedVelocityX_;
+			savedVelocityX_ = 0.0f;
+		}
+		// 速度が0の場合は初期速度を設定
+		if (velocity_.x == 0.0f) {
+			velocity_.x = -kWalkSpeed;
+		}
 	}
 }
 
@@ -265,6 +275,9 @@ void Boss::StartJumpAttack() {
 	stateTimer_ = 0.0f;
 	jumpAttackTimer_ = 0.0f;
 	chargeTimer_ = 0.0f;
+	
+	// 現在の水平速度を保存
+	savedVelocityX_ = velocity_.x;
 	
 	// 上昇速度を設定
 	velocity_.y = kJumpSpeed;

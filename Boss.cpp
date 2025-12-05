@@ -148,9 +148,9 @@ void Boss::UpdateCooldown() {
 			hasVelocitySaved_ = false;
 		}
 		// 速度が0の場合は、現在の向きに基づいて移動を再開
-		else if (velocity_.x == 0.0f) {
-			// 向きから速度を判断
-			if (worldTransform_.rotation_.y == kRotationRight) {
+		else if (std::abs(velocity_.x) < 0.001f) {
+			// 向きから速度を判断（π/2付近なら右向き、それ以外は左向き）
+			if (std::abs(worldTransform_.rotation_.y - kRotationRight) < 0.1f) {
 				velocity_.x = kWalkSpeed;
 			} else {
 				velocity_.x = -kWalkSpeed;

@@ -33,6 +33,7 @@ void Boss::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	// ジャンプ攻撃用の初期化
 	jumpAttackTimer_ = 0.0f;
 	groundY_ = position.y;
+	hasVelocitySaved_ = false;
 }
 
 void Boss::Update() {
@@ -142,12 +143,13 @@ void Boss::UpdateCooldown() {
 		chargeTimer_ = 0.0f;
 		
 		// 保存していた水平速度を復元（ジャンプ攻撃後の場合）
-		if (savedVelocityX_ != 0.0f) {
+		if (hasVelocitySaved_) {
 			velocity_.x = savedVelocityX_;
+			hasVelocitySaved_ = false;
 			savedVelocityX_ = 0.0f;
 		}
 		// 速度が0の場合は初期速度を設定
-		if (velocity_.x == 0.0f) {
+		else if (velocity_.x == 0.0f) {
 			velocity_.x = -kWalkSpeed;
 		}
 	}
@@ -278,6 +280,7 @@ void Boss::StartJumpAttack() {
 	
 	// 現在の水平速度を保存
 	savedVelocityX_ = velocity_.x;
+	hasVelocitySaved_ = true;
 	
 	// 上昇速度を設定
 	velocity_.y = kJumpSpeed;

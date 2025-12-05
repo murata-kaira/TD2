@@ -92,6 +92,7 @@ private:
 	float jumpAttackTimer_ = 0.0f;                      // ジャンプ攻撃用タイマー
 	float groundY_ = 0.0f;                              // 地面のY座標
 	float savedVelocityX_ = 0.0f;                       // ジャンプ攻撃前の水平速度を保存
+	bool hasVelocitySaved_ = false;                     // 速度が保存されているかのフラグ
 	
 	// 突進攻撃を開始
 	void StartCharge();

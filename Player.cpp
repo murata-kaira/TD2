@@ -409,6 +409,8 @@ void Player::Update() {
 
 	if (collisionMapInfo.ceiling) {
 		velocity_.y = 0;
+		// 天井に当たったらジャンプ攻撃をキャンセル
+		isJumpAttacking_ = false;
 	}
 
 	UpdateOnWall(collisionMapInfo);

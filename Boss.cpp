@@ -89,17 +89,17 @@ void Boss::UpdatePatrol() {
 	walkTimer += 1.0f / kFrameRate;
 	worldTransform_.rotation_.x = std::sin(std::numbers::pi_v<float> * 2.0f * walkTimer / kWalkMotionTime);
 
-	// ジャンプ攻撃のタイマー
+	// 攻撃タイマーの更新
 	jumpAttackTimer_ += 1.0f / kFrameRate;
-	
-	// 突進攻撃のタイマー
 	chargeTimer_ += 1.0f / kFrameRate;
 	
-	// ジャンプ攻撃を優先的に実行
-	if (jumpAttackTimer_ >= kJumpAttackInterval && player_ != nullptr) {
-		StartJumpAttack();
-	} else if (chargeTimer_ >= kChargeInterval && player_ != nullptr) {
-		StartCharge();
+	// プレイヤーが存在する場合、攻撃を実行（ジャンプ攻撃を優先）
+	if (player_ != nullptr) {
+		if (jumpAttackTimer_ >= kJumpAttackInterval) {
+			StartJumpAttack();
+		} else if (chargeTimer_ >= kChargeInterval) {
+			StartCharge();
+		}
 	}
 }
 
@@ -143,6 +143,23 @@ void Boss::UpdateCooldown() {
 	}
 }
 
+void Boss::FacePlayer() {
+	if (player_ == nullptr) {
+		return;
+	}
+
+	Vector3 playerPos = player_->GetWorldPosition();
+	Vector3 bossPos = GetWorldPosition();
+
+	if (playerPos.x < bossPos.x) {
+		// プレイヤーが左にいる
+		worldTransform_.rotation_.y = kRotationLeft;
+	} else {
+		// プレイヤーが右にいる
+		worldTransform_.rotation_.y = kRotationRight;
+	}
+}
+
 void Boss::StartCharge() {
 	state_ = State::kCharge;
 	stateTimer_ = 0.0f;
@@ -150,17 +167,15 @@ void Boss::StartCharge() {
 
 	// プレイヤーの方向に突進
 	if (player_ != nullptr) {
+		FacePlayer();
+		
 		Vector3 playerPos = player_->GetWorldPosition();
 		Vector3 bossPos = GetWorldPosition();
-
+		
 		if (playerPos.x < bossPos.x) {
-			// プレイヤーが左にいる
 			velocity_.x = -kChargeSpeed;
-			worldTransform_.rotation_.y = kRotationLeft;
 		} else {
-			// プレイヤーが右にいる
 			velocity_.x = kChargeSpeed;
-			worldTransform_.rotation_.y = kRotationRight;
 		}
 	}
 }
@@ -270,16 +285,7 @@ void Boss::UpdateJumpAttack() {
 		state_ = State::kJumpFall;
 		
 		// プレイヤーの方向に向ける
-		if (player_ != nullptr) {
-			Vector3 playerPos = player_->GetWorldPosition();
-			Vector3 bossPos = GetWorldPosition();
-			
-			if (playerPos.x < bossPos.x) {
-				worldTransform_.rotation_.y = kRotationLeft;
-			} else {
-				worldTransform_.rotation_.y = kRotationRight;
-			}
-		}
+		FacePlayer();
 		
 		// 急降下開始
 		velocity_.y = -kJumpAttackSpeed;

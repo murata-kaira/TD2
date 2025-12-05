@@ -124,6 +124,11 @@ private:
 	static inline const float kJumpSpeed = 0.4f;           // ジャンプ上昇速度
 	static inline const float kJumpAttackSpeed = 0.6f;     // ジャンプ攻撃時の下降速度
 	static inline const float kGravity = 0.02f;            // 重力加速度
+	static inline const float kJumpAttackLeanAngle = 0.5f; // ジャンプ攻撃時の前傾角度
 	float jumpAttackTimer_ = 0.0f;                         // ジャンプ攻撃用タイマー
 	float groundY_ = 0.0f;                                 // 地面のY座標
+
+	// 向き定数
+	static inline const float kRotationLeft = std::numbers::pi_v<float> * 3.0f / 2.0f;  // 左向き
+	static inline const float kRotationRight = std::numbers::pi_v<float> / 2.0f;        // 右向き
 };

@@ -111,11 +111,11 @@ void Boss::UpdateCharge() {
 	if (worldTransform_.translation_.x <= leftLimit_) {
 		worldTransform_.translation_.x = leftLimit_;
 		velocity_.x = kChargeSpeed;
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+		worldTransform_.rotation_.y = kRotationRight;
 	} else if (worldTransform_.translation_.x >= rightLimit_) {
 		worldTransform_.translation_.x = rightLimit_;
 		velocity_.x = -kChargeSpeed;
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+		worldTransform_.rotation_.y = kRotationLeft;
 	}
 
 	// 突進時は前傾姿勢
@@ -156,11 +156,11 @@ void Boss::StartCharge() {
 		if (playerPos.x < bossPos.x) {
 			// プレイヤーが左にいる
 			velocity_.x = -kChargeSpeed;
-			worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+			worldTransform_.rotation_.y = kRotationLeft;
 		} else {
 			// プレイヤーが右にいる
 			velocity_.x = kChargeSpeed;
-			worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+			worldTransform_.rotation_.y = kRotationRight;
 		}
 	}
 }
@@ -238,10 +238,10 @@ void Boss::ReverseDirection() {
 	// 向きを反転（Y軸回転）
 	if (velocity_.x > 0) {
 		// 右向き
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+		worldTransform_.rotation_.y = kRotationRight;
 	} else {
 		// 左向き
-		worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+		worldTransform_.rotation_.y = kRotationLeft;
 	}
 }
 
@@ -263,7 +263,7 @@ void Boss::UpdateJumpAttack() {
 	velocity_.y -= kGravity;
 	
 	// 前傾姿勢
-	worldTransform_.rotation_.x = 0.5f;
+	worldTransform_.rotation_.x = kJumpAttackLeanAngle;
 	
 	// 頂点に達したら落下攻撃に移行
 	if (velocity_.y <= 0.0f) {
@@ -275,9 +275,9 @@ void Boss::UpdateJumpAttack() {
 			Vector3 bossPos = GetWorldPosition();
 			
 			if (playerPos.x < bossPos.x) {
-				worldTransform_.rotation_.y = std::numbers::pi_v<float> * 3.0f / 2.0f;
+				worldTransform_.rotation_.y = kRotationLeft;
 			} else {
-				worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+				worldTransform_.rotation_.y = kRotationRight;
 			}
 		}
 		

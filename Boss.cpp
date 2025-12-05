@@ -146,11 +146,15 @@ void Boss::UpdateCooldown() {
 		if (hasVelocitySaved_) {
 			velocity_.x = savedVelocityX_;
 			hasVelocitySaved_ = false;
-			savedVelocityX_ = 0.0f;
 		}
-		// 速度が0の場合は初期速度を設定
+		// 速度が0の場合は、現在の向きに基づいて移動を再開
 		else if (velocity_.x == 0.0f) {
-			velocity_.x = -kWalkSpeed;
+			// 向きから速度を判断
+			if (worldTransform_.rotation_.y == kRotationRight) {
+				velocity_.x = kWalkSpeed;
+			} else {
+				velocity_.x = -kWalkSpeed;
+			}
 		}
 	}
 }

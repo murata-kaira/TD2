@@ -292,12 +292,16 @@ void Boss::UpdateJump() {
 		isOnGround_ = true;
 		// パトロール状態に戻る
 		state_ = State::kPatrol;
-		// 通常速度に戻す
-		velocity_.x = (velocity_.x > 0) ? kWalkSpeed : -kWalkSpeed;
+		// 向きに基づいて通常速度に戻す
+		if (worldTransform_.rotation_.y == std::numbers::pi_v<float> / 2.0f) {
+			velocity_.x = kWalkSpeed; // 右向き
+		} else {
+			velocity_.x = -kWalkSpeed; // 左向き
+		}
 		jumpTimer_ = 0.0f;
 		worldTransform_.rotation_.x = 0.0f;
 	} else {
 		// 空中では少し前傾姿勢
-		worldTransform_.rotation_.x = 0.2f;
+		worldTransform_.rotation_.x = kJumpRotation;
 	}
 }

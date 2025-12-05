@@ -95,6 +95,7 @@ private:
 	static inline const float kJumpMoveSpeed = 0.1f;    // ジャンプ中の水平移動速度
 	static inline const float kJumpInterval = 4.5f;     // ジャンプ攻撃間隔（秒）
 	static inline const float kGravity = 0.015f;        // 重力加速度
+	static inline const float kJumpRotation = 0.2f;     // ジャンプ中の前傾姿勢
 	float jumpTimer_ = 0.0f;                            // ジャンプ用タイマー
 	bool isOnGround_ = true;                            // 地面にいるかどうか
 	float groundY_ = 0.0f;                              // 地面のY座標

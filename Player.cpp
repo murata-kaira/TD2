@@ -77,10 +77,20 @@ void Player::InputMove() {
 		}
 
 	} else {
-		// 落下速度
-		velocity_.y += -kGravityAcceleration / 60.0f;
-		// 落下速度制限
-		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+		// 空中でのジャンプ攻撃入力チェック
+		if (Input::GetInstance()->TriggerKey(DIK_DOWN) && !isJumpAttacking_) {
+			// ジャンプ攻撃開始
+			isJumpAttacking_ = true;
+			velocity_.y = -kJumpAttackSpeed; // 急降下
+		}
+
+		// ジャンプ攻撃中でない場合は通常の落下
+		if (!isJumpAttacking_) {
+			// 落下速度
+			velocity_.y += -kGravityAcceleration / 60.0f;
+			// 落下速度制限
+			velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+		}
 	}
 }
 
@@ -246,6 +256,8 @@ void Player::UpdateOnGround(const CollisionMapInfo& info) {
 			velocity_.x *= (1.0f - kAttenuationLanding);
 			// Y速度をゼロに
 			velocity_.y = 0.0f;
+			// ジャンプ攻撃状態をリセット
+			isJumpAttacking_ = false;
 		}
 	}
 }
@@ -476,4 +488,6 @@ void Player::BounceFromStomp() {
 	// 踏みつけ後に跳ね上がる
 	velocity_.y = kBounceSpeed;
 	onGround_ = false;
+	// ジャンプ攻撃状態をリセット
+	isJumpAttacking_ = false;
 }

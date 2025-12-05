@@ -50,6 +50,9 @@ public:
 	// 踏みつけ後のジャンプ
 	void BounceFromStomp();
 
+	// ジャンプ攻撃中かどうか
+	bool IsJumpAttacking() const { return isJumpAttacking_; }
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -126,4 +129,8 @@ private:
 	static inline const float kStompTolerance = 0.2f;
 	// フレームレート
 	static inline const float kFrameRate = 60.0f;
+
+	// ジャンプ攻撃関連
+	bool isJumpAttacking_ = false;
+	static inline const float kJumpAttackSpeed = 0.8f; // ジャンプ攻撃時の下降速度
 };

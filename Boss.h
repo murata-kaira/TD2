@@ -138,4 +138,8 @@ private:
 	static inline const float kJumpAttackSpeed = 0.6f;     // ジャンプ攻撃時の下降速度
 	static inline const float kGravity = 0.02f;            // 重力加速度
 	static inline const float kJumpAttackLeanAngle = 0.5f; // ジャンプ攻撃時の前傾角度
+	
+	// 浮動小数点比較用の許容誤差
+	static inline const float kVelocityEpsilon = 0.001f;   // 速度のゼロ判定用
+	static inline const float kRotationTolerance = 0.1f;   // 回転角度の比較用
 };

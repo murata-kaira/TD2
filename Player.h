@@ -84,6 +84,7 @@ private:
 	static inline const float kJumpAcceleration = 22.0f;
 	static inline const float kGravityAcceleration = 0.98f;
 	static inline const float kLimitFallSpeed = 0.5f;
+	static inline const float kJumpAttackSpeed = 0.8f; // ジャンプ攻撃時の下降速度 (通常落下速度より速い)
 
 	MapChipField* mapChipField_ = nullptr;
 
@@ -130,7 +131,6 @@ private:
 	// フレームレート
 	static inline const float kFrameRate = 60.0f;
 
-	// ジャンプ攻撃関連
+	// ジャンプ攻撃状態
 	bool isJumpAttacking_ = false;
-	static inline const float kJumpAttackSpeed = 0.8f; // ジャンプ攻撃時の下降速度
 };

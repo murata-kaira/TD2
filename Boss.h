@@ -87,6 +87,11 @@ private:
 	static inline const float kCooldownDuration = 1.0f; // クールダウン時間（秒）
 	float chargeTimer_ = 0.0f;                          // 突進用タイマー
 	float stateTimer_ = 0.0f;                           // 状態遷移用タイマー
+	
+	// ジャンプ攻撃のメンバ変数
+	float jumpAttackTimer_ = 0.0f;                      // ジャンプ攻撃用タイマー
+	float groundY_ = 0.0f;                              // 地面のY座標
+	
 	// 突進攻撃を開始
 	void StartCharge();
 	// ジャンプ攻撃を開始
@@ -125,12 +130,10 @@ private:
 	static inline const float kRotationLeft = std::numbers::pi_v<float> * 3.0f / 2.0f;  // 左向き
 	static inline const float kRotationRight = std::numbers::pi_v<float> / 2.0f;        // 右向き
 
-	// ジャンプ攻撃関連
+	// ジャンプ攻撃定数
 	static inline const float kJumpAttackInterval = 5.0f;  // ジャンプ攻撃間隔（秒）
 	static inline const float kJumpSpeed = 0.4f;           // ジャンプ上昇速度
 	static inline const float kJumpAttackSpeed = 0.6f;     // ジャンプ攻撃時の下降速度
 	static inline const float kGravity = 0.02f;            // 重力加速度
 	static inline const float kJumpAttackLeanAngle = 0.5f; // ジャンプ攻撃時の前傾角度
-	float jumpAttackTimer_ = 0.0f;                         // ジャンプ攻撃用タイマー
-	float groundY_ = 0.0f;                                 // 地面のY座標
 };

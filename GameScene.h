@@ -85,6 +85,11 @@ private:
 
 	Fade* fade_ = nullptr;
 
+	// ゲームオーバー・クリアスプライト
+	Sprite* gameOverSprite_ = nullptr;
+	Sprite* gameClearSprite_ = nullptr;
+	uint32_t gameOverTextureHandle_ = 0;
+	uint32_t gameClearTextureHandle_ = 0;
 
 	// 勝利演出用タイマー
 	float victoryTimer_ = 0.0f;

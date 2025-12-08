@@ -110,8 +110,21 @@ void GameScene::ChangePhase() {
 		}
 		break;
 	case Phase::kDeath:
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kDeath;
+		}
+
+
 		break;
 	case Phase::kVictory:
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = Phase::kVictory;
+		}
+
 		break;
 	}
 }

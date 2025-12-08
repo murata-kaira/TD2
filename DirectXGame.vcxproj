@@ -110,6 +110,8 @@
     <ClCompile Include="DeathParticles.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Fade.cpp" />
+    <ClCompile Include="GameClear.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
@@ -199,6 +201,8 @@
     <ClInclude Include="DeathParticles.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="Fade.h" />
+    <ClInclude Include="GameClear.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="IScene.h" />
     <ClInclude Include="MapChipField.h" />

@@ -79,7 +79,7 @@ void GameScene::Initialize() {
 
 	deathParticle_model_ = Model::CreateFromOBJ("deathParticle");
 
-	phase_ = Phase::kPlay;
+	phase_ = Phase::kFadeIn;
 
 	fade_ = new Fade();
 	fade_->Initialize();
@@ -148,7 +148,6 @@ void GameScene::Update() {
 	case Phase::kFadeIn:
 		fade_->Update();
 		if (fade_->IsFinished()) {
-			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kPlay;
 		}
 

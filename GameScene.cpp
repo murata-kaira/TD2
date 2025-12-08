@@ -244,6 +244,7 @@ void GameScene::Update() {
 		if (deathParticles_ && deathParticles_->IsFinished()) {
 			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kFadeOut;
+			nextScene_ = 3; // ゲームオーバーシーンへ
 		}
 
 		skydome_->Update();
@@ -261,6 +262,7 @@ void GameScene::Update() {
 		if (victoryTimer_ >= kVictoryDuration) {
 			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kFadeOut;
+			nextScene_ = 2; // クリアシーンへ
 		}
 		skydome_->Update();
 		CController_->Update();

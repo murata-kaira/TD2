@@ -1,6 +1,8 @@
 #include "SceneManager.h"
 #include "TitleScene.h" // TitleSceneをインクルード
 #include "GameScene.h"  // GameSceneをインクルード
+#include "GameClear.h"  // ClearSceneをインクルード
+#include "GameOver.h"   // OverSceneをインクルード
 
 SceneManager* SceneManager::GetInstance() {
     static SceneManager instance;
@@ -19,6 +21,16 @@ void SceneManager::Update() {
             if (currentSceneType_ == SceneType::kTitle) {
                 ChangeScene(SceneType::kGame);
             } else if (currentSceneType_ == SceneType::kGame) {
+                // GameSceneから次のシーンを取得
+                int nextScene = currentScene_->GetNextScene();
+                if (nextScene == 2) {
+                    ChangeScene(SceneType::kClear);
+                } else if (nextScene == 3) {
+                    ChangeScene(SceneType::kOver);
+                } else {
+                    ChangeScene(SceneType::kTitle);
+                }
+            } else if (currentSceneType_ == SceneType::kClear || currentSceneType_ == SceneType::kOver) {
                 ChangeScene(SceneType::kTitle);
             }
         }
@@ -45,6 +57,12 @@ void SceneManager::ChangeScene(SceneType newSceneType) {
         break;
     case SceneType::kGame:
         currentScene_.reset(new GameScene());
+        break;
+    case SceneType::kClear:
+        currentScene_.reset(new ClearScene());
+        break;
+    case SceneType::kOver:
+        currentScene_.reset(new OverScene());
         break;
     default:
         // 未知のシーンタイプの場合の処理 (エラーログなど)

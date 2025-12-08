@@ -27,6 +27,7 @@ public:
 	void CheckAllCollisions();
 
 	bool IsFinished() const override { return finished_; }
+	int GetNextScene() const override { return nextScene_; }
 
 private:
 	enum class Phase {
@@ -84,6 +85,8 @@ private:
 	bool finished_ = false;
 
 	Fade* fade_ = nullptr;
+
+	int nextScene_ = -1; // 次のシーン（2: クリア, 3: ゲームオーバー）
 
 
 	// 勝利演出用タイマー

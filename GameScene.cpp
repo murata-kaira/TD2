@@ -19,8 +19,6 @@ GameScene::~GameScene() {
 
 	delete deathParticles_;
 	delete deathParticle_model_;
-	delete gameOverSprite_;
-	delete gameClearSprite_;
 }
 
 void GameScene::Initialize() {
@@ -86,17 +84,6 @@ void GameScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
-
-	// ゲームオーバー・クリアスプライトの初期化
-	gameOverTextureHandle_ = TextureManager::Load("gameover.png");
-	gameClearTextureHandle_ = TextureManager::Load("gameclear.png");
-	
-	// スプライトの作成（画面中央に配置）
-	Vector2 gameOverPos = {(WinApp::kWindowWidth - 800.0f) / 2.0f, (WinApp::kWindowHeight - 200.0f) / 2.0f};
-	gameOverSprite_ = Sprite::Create(gameOverTextureHandle_, gameOverPos);
-	
-	Vector2 gameClearPos = {(WinApp::kWindowWidth - 800.0f) / 2.0f, (WinApp::kWindowHeight - 200.0f) / 2.0f};
-	gameClearSprite_ = Sprite::Create(gameClearTextureHandle_, gameClearPos);
 
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -244,6 +231,7 @@ void GameScene::Update() {
 		if (deathParticles_ && deathParticles_->IsFinished()) {
 			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kFadeOut;
+			nextScene_ = NextScene::kGameOver; // ゲームオーバーシーンへ
 		}
 
 		skydome_->Update();
@@ -261,6 +249,7 @@ void GameScene::Update() {
 		if (victoryTimer_ >= kVictoryDuration) {
 			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			phase_ = Phase::kFadeOut;
+			nextScene_ = NextScene::kGameClear; // ゲームクリアシーンへ
 		}
 		skydome_->Update();
 		CController_->Update();
@@ -319,14 +308,6 @@ void GameScene::Draw() {
 	Model::PostDraw();
 	// スプライト描画前処理
 	Sprite::PreDraw(dxCommon->GetCommandList());
-	
-	// ゲームオーバー・クリアスプライト描画
-	if (phase_ == Phase::kDeath && deathParticles_ && deathParticles_->IsFinished()) {
-		gameOverSprite_->Draw();
-	} else if (phase_ == Phase::kVictory) {
-		gameClearSprite_->Draw();
-	}
-	
 	// スプライト描画後処理
 	Sprite::PostDraw();
 

@@ -28,6 +28,14 @@ public:
 
 	bool IsFinished() const override { return finished_; }
 
+	// 次のシーンタイプを取得
+	enum class NextScene {
+		kNone,
+		kGameOver,
+		kGameClear,
+	};
+	NextScene GetNextScene() const { return nextScene_; }
+
 private:
 	enum class Phase {
 		kFadeIn, // フェードイン
@@ -82,14 +90,9 @@ private:
 	Model* deathParticle_model_ = nullptr;
 
 	bool finished_ = false;
+	NextScene nextScene_ = NextScene::kNone;
 
 	Fade* fade_ = nullptr;
-
-	// ゲームオーバー・クリアスプライト
-	Sprite* gameOverSprite_ = nullptr;
-	Sprite* gameClearSprite_ = nullptr;
-	uint32_t gameOverTextureHandle_ = 0;
-	uint32_t gameClearTextureHandle_ = 0;
 
 	// 勝利演出用タイマー
 	float victoryTimer_ = 0.0f;

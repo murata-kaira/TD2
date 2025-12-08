@@ -23,9 +23,9 @@ void SceneManager::Update() {
             } else if (currentSceneType_ == SceneType::kGame) {
                 // GameSceneから次のシーンを取得
                 int nextScene = currentScene_->GetNextScene();
-                if (nextScene == 2) {
+                if (nextScene == IScene::kNextSceneClear) {
                     ChangeScene(SceneType::kClear);
-                } else if (nextScene == 3) {
+                } else if (nextScene == IScene::kNextSceneOver) {
                     ChangeScene(SceneType::kOver);
                 } else {
                     ChangeScene(SceneType::kTitle);

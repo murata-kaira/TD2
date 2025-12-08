@@ -86,7 +86,7 @@ private:
 
 	Fade* fade_ = nullptr;
 
-	int nextScene_ = -1; // 次のシーン（2: クリア, 3: ゲームオーバー）
+	int nextScene_ = IScene::kNoNextScene; // 次のシーン（IScene::kNextSceneClear: クリア, IScene::kNextSceneOver: ゲームオーバー）
 
 
 	// 勝利演出用タイマー

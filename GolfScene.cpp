@@ -104,18 +104,18 @@ void GolfScene::Update() {
 		ballVelocity_.x *= kFriction;
 		ballVelocity_.z *= kFriction;
 
-		// ボールが止まったか判定
-		float speed = std::sqrt(ballVelocity_.x * ballVelocity_.x + 
-		                       ballVelocity_.z * ballVelocity_.z);
-		if (speed < kStopThreshold) {
+		// ボールが止まったか判定（速度の2乗で比較）
+		float speedSquared = ballVelocity_.x * ballVelocity_.x + 
+		                     ballVelocity_.z * ballVelocity_.z;
+		if (speedSquared < kStopThreshold * kStopThreshold) {
 			ballVelocity_ = {0.0f, 0.0f, 0.0f};
 
-			// ホールに入ったか判定
+			// ホールに入ったか判定（距離の2乗で比較）
 			float dx = worldTransformBall_.translation_.x - worldTransformHole_.translation_.x;
 			float dz = worldTransformBall_.translation_.z - worldTransformHole_.translation_.z;
-			float distance = std::sqrt(dx * dx + dz * dz);
+			float distanceSquared = dx * dx + dz * dz;
 
-			if (distance < kHoleRadius) {
+			if (distanceSquared < kHoleRadius * kHoleRadius) {
 				// ホールイン！
 				phase_ = Phase::kResult;
 				resultTimer_ = 0.0f;

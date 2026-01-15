@@ -88,8 +88,8 @@ void GolfScene::Update() {
 		// スペースキーで打つ
 		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 			// 速度を設定
-			ballVelocity_.x = std::sin(aimAngle_) * power_ * 0.1f;
-			ballVelocity_.z = std::cos(aimAngle_) * power_ * 0.1f;
+			ballVelocity_.x = std::sin(aimAngle_) * power_ * kPowerScale;
+			ballVelocity_.z = std::cos(aimAngle_) * power_ * kPowerScale;
 			shotCount_++;
 			phase_ = Phase::kShot;
 		}

@@ -59,7 +59,6 @@ private:
 
 	// 結果表示用タイマー
 	float resultTimer_ = 0.0f;
-	static inline const float kResultDuration = 3.0f;
 
 	// 定数
 	static inline const float kBallRadius = 0.5f;
@@ -67,4 +66,5 @@ private:
 	static inline const float kMaxPower = 30.0f;
 	static inline const float kFriction = 0.95f;
 	static inline const float kStopThreshold = 0.1f;
+	static inline const float kResultDuration = 3.0f;
 };

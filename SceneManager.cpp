@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "TitleScene.h" // TitleSceneをインクルード
 #include "GameScene.h"  // GameSceneをインクルード
+#include "GolfScene.h"  // GolfSceneをインクルード
 
 SceneManager* SceneManager::GetInstance() {
     static SceneManager instance;
@@ -19,6 +20,8 @@ void SceneManager::Update() {
             if (currentSceneType_ == SceneType::kTitle) {
                 ChangeScene(SceneType::kGame);
             } else if (currentSceneType_ == SceneType::kGame) {
+                ChangeScene(SceneType::kGolf);
+            } else if (currentSceneType_ == SceneType::kGolf) {
                 ChangeScene(SceneType::kTitle);
             }
         }
@@ -45,6 +48,9 @@ void SceneManager::ChangeScene(SceneType newSceneType) {
         break;
     case SceneType::kGame:
         currentScene_.reset(new GameScene());
+        break;
+    case SceneType::kGolf:
+        currentScene_.reset(new GolfScene());
         break;
     default:
         // 未知のシーンタイプの場合の処理 (エラーログなど)

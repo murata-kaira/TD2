@@ -34,6 +34,7 @@ private:
 		kPlay,  // ゲームプレイ
 		kDeath, // デス演出
 		kVictory, // クリア演出
+		kGolf,  // ゴルフモード
 		kFadeOut, // フェードアウト
 	};
 	Phase phase_;
@@ -92,5 +93,35 @@ private:
 
 	// フレームレート
 	static inline const float kFrameRate = 60.0f;
+
+	// ゴルフモード用
+	enum class GolfPhase {
+		kAim,     // 狙いを定める
+		kPower,   // パワーを決める
+		kShot,    // ショット後のボール移動
+		kResult,  // 結果表示
+	};
+	GolfPhase golfPhase_ = GolfPhase::kAim;
+	
+	WorldTransform worldTransformBall_;
+	Model* modelBall_ = nullptr;
+	Vector3 ballVelocity_ = {0.0f, 0.0f, 0.0f};
+	
+	WorldTransform worldTransformHole_;
+	Model* modelHole_ = nullptr;
+	
+	float golfAimAngle_ = 0.0f;
+	float golfPower_ = 0.0f;
+	float golfPowerDirection_ = 1.0f;
+	int golfShotCount_ = 0;
+	float golfResultTimer_ = 0.0f;
+	
+	// ゴルフ用定数
+	static inline const float kGolfHoleRadius = 1.0f;
+	static inline const float kGolfMaxPower = 30.0f;
+	static inline const float kGolfPowerScale = 0.1f;
+	static inline const float kGolfFriction = 0.95f;
+	static inline const float kGolfStopThreshold = 0.1f;
+	static inline const float kGolfResultDuration = 3.0f;
 
 };

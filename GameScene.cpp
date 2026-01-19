@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "Math.h"
+#include <numbers>
 
 using namespace KamataEngine;
 GameScene::~GameScene() {
@@ -19,6 +20,8 @@ GameScene::~GameScene() {
 
 	delete deathParticles_;
 	delete deathParticle_model_;
+	delete modelBall_;
+	delete modelHole_;
 }
 
 void GameScene::Initialize() {
@@ -87,6 +90,24 @@ void GameScene::Initialize() {
 
 	// デバックカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
+	// ゴルフモード用の初期化
+	modelBall_ = Model::CreateFromOBJ("player"); // ボールとしてプレイヤーモデルを使用
+	modelHole_ = Model::CreateFromOBJ("goal");   // ホールとしてゴールモデルを使用
+	
+	worldTransformBall_.Initialize();
+	worldTransformBall_.translation_ = {0.0f, 0.5f, -10.0f};
+	worldTransformBall_.scale_ = {0.5f, 0.5f, 0.5f};
+	
+	worldTransformHole_.Initialize();
+	worldTransformHole_.translation_ = {0.0f, 0.1f, 30.0f};
+	worldTransformHole_.scale_ = {1.5f, 0.2f, 1.5f};
+	
+	golfPhase_ = GolfPhase::kAim;
+	golfShotCount_ = 0;
+	golfAimAngle_ = 0.0f;
+	golfPower_ = 0.0f;
+	ballVelocity_ = {0.0f, 0.0f, 0.0f};
 }
 
 void GameScene::ChangePhase() {
@@ -121,8 +142,16 @@ void GameScene::ChangePhase() {
 	case Phase::kVictory:
 		fade_->Update();
 		if (fade_->IsFinished()) {
-			fade_->Start(Fade::Status::FadeOut, 1.0f);
-			phase_ = Phase::kVictory;
+			// 勝利後はゴルフモードへ遷移
+			phase_ = Phase::kGolf;
+			golfPhase_ = GolfPhase::kAim;
+			golfShotCount_ = 0;
+			golfAimAngle_ = 0.0f;
+			golfPower_ = 0.0f;
+			ballVelocity_ = {0.0f, 0.0f, 0.0f};
+			// ボールとホールの位置をリセット
+			worldTransformBall_.translation_ = {0.0f, 0.5f, -10.0f};
+			worldTransformHole_.translation_ = {0.0f, 0.1f, 30.0f};
 		}
 
 		break;
@@ -276,6 +305,110 @@ void GameScene::Update() {
 		}
 
 		break;
+	case Phase::kGolf:
+		// ゴルフモードの更新
+		switch (golfPhase_) {
+		case GolfPhase::kAim:
+			// 左右キーで角度を調整
+			if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+				golfAimAngle_ += 0.05f;
+			}
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+				golfAimAngle_ -= 0.05f;
+			}
+
+			// スペースキーでパワー調整フェーズへ
+			if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+				golfPhase_ = GolfPhase::kPower;
+				golfPower_ = 0.0f;
+				golfPowerDirection_ = 1.0f;
+			}
+			break;
+
+		case GolfPhase::kPower:
+			// パワーゲージを往復させる
+			golfPower_ += golfPowerDirection_ * 0.5f;
+			if (golfPower_ >= kGolfMaxPower) {
+				golfPower_ = kGolfMaxPower;
+				golfPowerDirection_ = -1.0f;
+			} else if (golfPower_ <= 0.0f) {
+				golfPower_ = 0.0f;
+				golfPowerDirection_ = 1.0f;
+			}
+
+			// スペースキーで打つ
+			if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+				// 速度を設定
+				ballVelocity_.x = std::sin(golfAimAngle_) * golfPower_ * kGolfPowerScale;
+				ballVelocity_.z = std::cos(golfAimAngle_) * golfPower_ * kGolfPowerScale;
+				golfShotCount_++;
+				golfPhase_ = GolfPhase::kShot;
+			}
+			break;
+
+		case GolfPhase::kShot:
+			// ボールの移動
+			worldTransformBall_.translation_.x += ballVelocity_.x;
+			worldTransformBall_.translation_.z += ballVelocity_.z;
+
+			// 摩擦による減速
+			ballVelocity_.x *= kGolfFriction;
+			ballVelocity_.z *= kGolfFriction;
+
+			// ボールが止まったか判定（速度の2乗で比較）
+			{
+				float speedSquared = ballVelocity_.x * ballVelocity_.x + 
+				                     ballVelocity_.z * ballVelocity_.z;
+				if (speedSquared < kGolfStopThreshold * kGolfStopThreshold) {
+					ballVelocity_ = {0.0f, 0.0f, 0.0f};
+
+					// ホールに入ったか判定（距離の2乗で比較）
+					float dx = worldTransformBall_.translation_.x - worldTransformHole_.translation_.x;
+					float dz = worldTransformBall_.translation_.z - worldTransformHole_.translation_.z;
+					float distanceSquared = dx * dx + dz * dz;
+
+					if (distanceSquared < kGolfHoleRadius * kGolfHoleRadius) {
+						// ホールイン！
+						golfPhase_ = GolfPhase::kResult;
+						golfResultTimer_ = 0.0f;
+					} else {
+						// 次のショット
+						golfPhase_ = GolfPhase::kAim;
+					}
+				}
+			}
+			break;
+
+		case GolfPhase::kResult:
+			golfResultTimer_ += 1.0f / kFrameRate;
+			if (golfResultTimer_ >= kGolfResultDuration) {
+				fade_->Start(Fade::Status::FadeOut, 1.0f);
+				phase_ = Phase::kFadeOut;
+			}
+			break;
+		}
+
+		// ゴルフ用のカメラ更新（ボールに追従）
+		camera_.translation_.x = worldTransformBall_.translation_.x;
+		camera_.translation_.y = 20.0f;
+		camera_.translation_.z = worldTransformBall_.translation_.z - 30.0f;
+		camera_.rotation_.x = 0.5f;
+		camera_.TransferMatrix();
+
+		// ボールとホールの行列更新
+		WorldTransformUpdate(worldTransformBall_);
+		WorldTransformUpdate(worldTransformHole_);
+
+		// 地面（ブロック）の更新
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				WorldTransformUpdate(*worldTransformBlock);
+			}
+		}
+
+		break;
 	case Phase::kFadeOut:
 		fade_->Update();
 		if (fade_->IsFinished()) {
@@ -297,24 +430,43 @@ void GameScene::Draw() {
 	// 3Dモデル描画前処理
 	Model::PreDraw(dxCommon->GetCommandList());
 
-	// スカイドームの描画
-	skydome_->Draw();
-
-	if (!player_->IsDead())
-		player_->Draw();
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			block_model_->Draw(*worldTransformBlock, camera_);
+	// ゴルフモードの場合
+	if (phase_ == Phase::kGolf) {
+		// 地面（ブロック）を描画
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				block_model_->Draw(*worldTransformBlock, camera_);
+			}
 		}
+
+		// ホールを描画
+		modelHole_->Draw(worldTransformHole_, camera_);
+
+		// ボールを描画
+		modelBall_->Draw(worldTransformBall_, camera_);
+	} else {
+		// 通常モードの描画
+		// スカイドームの描画
+		skydome_->Draw();
+
+		if (!player_->IsDead())
+			player_->Draw();
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				block_model_->Draw(*worldTransformBlock, camera_);
+			}
+		}
+
+		boss_->Draw();
+		if (player_->IsDead())
+			if (deathParticles_) {
+				deathParticles_->Draw();
+			}
 	}
-
-	boss_->Draw();
-	if (player_->IsDead())
-		if (deathParticles_) {
-			deathParticles_->Draw();
-		}
 
 	Model::PostDraw();
 	// スプライト描画前処理

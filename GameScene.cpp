@@ -356,25 +356,23 @@ void GameScene::Update() {
 			ballVelocity_.z *= kGolfFriction;
 
 			// ボールが止まったか判定（速度の2乗で比較）
-			{
-				float speedSquared = ballVelocity_.x * ballVelocity_.x + 
-				                     ballVelocity_.z * ballVelocity_.z;
-				if (speedSquared < kGolfStopThreshold * kGolfStopThreshold) {
-					ballVelocity_ = {0.0f, 0.0f, 0.0f};
+			float speedSquared = ballVelocity_.x * ballVelocity_.x + 
+			                     ballVelocity_.z * ballVelocity_.z;
+			if (speedSquared < kGolfStopThreshold * kGolfStopThreshold) {
+				ballVelocity_ = {0.0f, 0.0f, 0.0f};
 
-					// ホールに入ったか判定（距離の2乗で比較）
-					float dx = worldTransformBall_.translation_.x - worldTransformHole_.translation_.x;
-					float dz = worldTransformBall_.translation_.z - worldTransformHole_.translation_.z;
-					float distanceSquared = dx * dx + dz * dz;
+				// ホールに入ったか判定（距離の2乗で比較）
+				float dx = worldTransformBall_.translation_.x - worldTransformHole_.translation_.x;
+				float dz = worldTransformBall_.translation_.z - worldTransformHole_.translation_.z;
+				float distanceSquared = dx * dx + dz * dz;
 
-					if (distanceSquared < kGolfHoleRadius * kGolfHoleRadius) {
-						// ホールイン！
-						golfPhase_ = GolfPhase::kResult;
-						golfResultTimer_ = 0.0f;
-					} else {
-						// 次のショット
-						golfPhase_ = GolfPhase::kAim;
-					}
+				if (distanceSquared < kGolfHoleRadius * kGolfHoleRadius) {
+					// ホールイン！
+					golfPhase_ = GolfPhase::kResult;
+					golfResultTimer_ = 0.0f;
+				} else {
+					// 次のショット
+					golfPhase_ = GolfPhase::kAim;
 				}
 			}
 			break;

@@ -140,20 +140,7 @@ void GameScene::ChangePhase() {
 
 		break;
 	case Phase::kVictory:
-		fade_->Update();
-		if (fade_->IsFinished()) {
-			// 勝利後はゴルフモードへ遷移
-			phase_ = Phase::kGolf;
-			golfPhase_ = GolfPhase::kAim;
-			golfShotCount_ = 0;
-			golfAimAngle_ = 0.0f;
-			golfPower_ = 0.0f;
-			ballVelocity_ = {0.0f, 0.0f, 0.0f};
-			// ボールとホールの位置をリセット
-			worldTransformBall_.translation_ = {0.0f, 0.5f, -10.0f};
-			worldTransformHole_.translation_ = {0.0f, 0.1f, 30.0f};
-		}
-
+		// ChangePhase では何もしない（Update で処理）
 		break;
 	}
 }
@@ -288,8 +275,16 @@ void GameScene::Update() {
 		// 勝利演出
 		victoryTimer_ += 1.0f / kFrameRate;
 		if (victoryTimer_ >= kVictoryDuration) {
-			fade_->Start(Fade::Status::FadeOut, 1.0f);
-			phase_ = Phase::kFadeOut;
+			// 勝利後はゴルフモードへ遷移
+			phase_ = Phase::kGolf;
+			golfPhase_ = GolfPhase::kAim;
+			golfShotCount_ = 0;
+			golfAimAngle_ = 0.0f;
+			golfPower_ = 0.0f;
+			ballVelocity_ = {0.0f, 0.0f, 0.0f};
+			// ボールとホールの位置をリセット
+			worldTransformBall_.translation_ = {0.0f, 0.5f, -10.0f};
+			worldTransformHole_.translation_ = {0.0f, 0.1f, 30.0f};
 		}
 		skydome_->Update();
 		CController_->Update();

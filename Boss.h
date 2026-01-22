@@ -91,6 +91,7 @@ private:
 	void UpdatePatrol();
 	// 突進状態の更新
 	void UpdateCharge();
+
 	// クールダウン状態の更新
 	void UpdateCooldown();
 

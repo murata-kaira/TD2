@@ -143,9 +143,11 @@ void GameScene::Update() {
 		break;
 	}
 
-	// カメラをボールに追従
-	camera_.translation_.x = worldTransformBall_.translation_.x;
-	camera_.translation_.z = worldTransformBall_.translation_.z - 30.0f;
+	// カメラをボールに追従（ゲームプレイ中のみ）
+	if (phase_ == Phase::kAim || phase_ == Phase::kPower || phase_ == Phase::kShot) {
+		camera_.translation_.x = worldTransformBall_.translation_.x;
+		camera_.translation_.z = worldTransformBall_.translation_.z - 30.0f;
+	}
 
 	// 行列を更新
 	camera_.TransferMatrix();

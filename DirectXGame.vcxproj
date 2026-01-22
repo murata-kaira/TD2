@@ -111,6 +111,8 @@
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Fade.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Golf.cpp" />
+    <ClCompile Include="GolfScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -200,6 +202,8 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="Fade.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Golf.h" />
+    <ClInclude Include="GolfScene.h" />
     <ClInclude Include="IScene.h" />
     <ClInclude Include="MapChipField.h" />
     <ClInclude Include="Player.h" />

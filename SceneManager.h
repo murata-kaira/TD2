@@ -16,6 +16,7 @@ public:
     enum class SceneType {
         kTitle,
         kGame,
+        kGolf,
     };
 
     // シーンの初期化

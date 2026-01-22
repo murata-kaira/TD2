@@ -1,96 +1,71 @@
 #pragma once
-#include"Player.h"
-#include<vector>
-#include"Skydome.h"
-#include"MapChipField.h"
-#include "CameraController.h"
-#include "Boss.h"
-#include "DeathParticles.h"
 #include "Fade.h"
-#include "IScene.h" // ISceneをインクルード
+#include "IScene.h"
+#include "KamataEngine.h"
 
-// ゲームシーン
-class GameScene : public IScene { // ISceneを継承
+using namespace KamataEngine;
+
+// ゲームシーン（ゴルフゲーム）
+class GameScene : public IScene {
 public:
+	enum class Phase {
+		kFadeIn,  // フェードイン
+		kAim,     // 狙いを定める
+		kPower,   // パワーを決める
+		kShot,    // ショット後のボール移動
+		kResult,  // 結果表示
+		kFadeOut, // フェードアウト
+	};
+
 	~GameScene();
-	// 初期化
+
 	void Initialize() override;
-
-	// 更新
 	void Update() override;
-
-	// 描画
 	void Draw() override;
-
-	void GenerateBlocks();
-
-	void CheckAllCollisions();
-
 	bool IsFinished() const override { return finished_; }
 
 private:
-	enum class Phase {
-		kFadeIn, // フェードイン
-		kPlay,  // ゲームプレイ
-		kDeath, // デス演出
-		kVictory, // クリア演出
-		kFadeOut, // フェードアウト
-	};
-	Phase phase_;
+	// カメラ
+	Camera camera_;
 
-	void ChangePhase();
+	// ボール
+	WorldTransform worldTransformBall_;
+	Model* modelBall_ = nullptr;
+	Vector3 ballVelocity_ = {0.0f, 0.0f, 0.0f};
 
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
-	//3Dモデルデータ
-	KamataEngine::Model* model_ = nullptr;
+	// ホール（目標）
+	WorldTransform worldTransformHole_;
+	Model* modelHole_ = nullptr;
 
-	//カメラ
-	KamataEngine::Camera camera_;
-	// 自キャラ
-	Player* player_ = nullptr;
-	// プレイヤーモデル
-	KamataEngine::Model* player_model_ = nullptr;
+	// 地面
+	WorldTransform worldTransformGround_;
+	Model* modelGround_ = nullptr;
 
-	// ブロックモデル
-	KamataEngine::Model* block_model_ = nullptr;
-	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
-
-	// デバッグカメラ有効
-	bool isDebugCameraActive_ = false;
-	// デバッグカメラ
-	KamataEngine::DebugCamera* debugCamera_ = nullptr;
-
-
-	// スカイドーム
-	Skydome* skydome_ = nullptr;
-
-	// 3Dモデル
-	KamataEngine:: Model* modelSkydome_ = nullptr;
-
-	// マップチップフィールド
-	MapChipField* mapChipField_ = nullptr;
-
-	CameraController* CController_ = nullptr;
-
-	Boss* boss_ = nullptr;
-
-	KamataEngine::Model* boss_model_ = nullptr;
-
-	DeathParticles* deathParticles_ = nullptr;
-
-	Model* deathParticle_model_ = nullptr;
-
-	bool finished_ = false;
-
+	// フェード
 	Fade* fade_ = nullptr;
 
+	// フェーズ
+	Phase phase_ = Phase::kFadeIn;
 
-	// 勝利演出用タイマー
-	float victoryTimer_ = 0.0f;
-	static inline const float kVictoryDuration = 2.0f;
+	// 角度と方向
+	float aimAngle_ = 0.0f;
+	float power_ = 0.0f;
+	float powerDirection_ = 1.0f; // パワーゲージの方向
 
-	// フレームレート
-	static inline const float kFrameRate = 60.0f;
+	// 打数
+	int shotCount_ = 0;
 
+	// 完了フラグ
+	bool finished_ = false;
+
+	// 結果表示用タイマー
+	float resultTimer_ = 0.0f;
+
+	// 定数
+	static inline const float kHoleRadius = 1.0f;
+	static inline const float kMaxPower = 30.0f;
+	static inline const float kPowerScale = 0.1f;
+	static inline const float kFriction = 0.95f;
+	static inline const float kStopThreshold = 0.1f;
+	static inline const float kResultDuration = 3.0f;
 };

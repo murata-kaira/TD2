@@ -115,6 +115,7 @@
     <ClCompile Include="GolfScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
+    <ClCompile Include="MyMath.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Skydome.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="GolfScene.h" />
     <ClInclude Include="IScene.h" />
     <ClInclude Include="MapChipField.h" />
+    <ClInclude Include="MyMath.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Skydome.h" />
